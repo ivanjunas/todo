@@ -1,90 +1,55 @@
-import expect from 'expect';
-//import { createStore } from 'redux';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { createStore } from 'redux';
 
 
-// implementation of the redux store
-const createStore = (reducer) => {
-  let state;
-  let listeners = [];
-
-  const getState = () => state;
-
-  const dispatch = (action) => {
-    state = reducer(state, action);
-    listeners.forEach(listener => listener());
-  };
-
-  const subscribe = (listener) => {
-    listeners.push(listener);
-    return () => {
-      listeners = listeners.filter(l => l !== listener);
-    }
-  };
-
-  dispatch({}); // dummy dispatch
-
-  return { getState, dispatch, subscribe };
-
-};
-
-// simple reducer
+// 1.) simple reducer
 function counter(state = 0, action) {
-	switch(action.type) {
+	//console.log(action.type);
+
+	switch(action.type) {			
 		case 'INCREMENT':
 			return state + 1;
 		case 'DECREMENT':
-			return state -1;
+			return state - 1;
 		default:
 			return state;
 	}
 }
 
-const store = createStore(counter);
 
-// initial state is 0  
-console.log(store.getState());
-
-
-const render = () => {
-	document.body.innerText = store.getState();
+// 2.) react component  
+const Counter = ( { value, onIncrement, onDecrement } ) => {	
+	return (
+		<div> 
+			<h1>{ value }</h1>
+			<button onClick={onIncrement}>+</button>
+			<button onClick={onDecrement}>-</button>
+		</div>
+	);
 }
 
 
+// 3.) create redux store API method, pass in reducer 
+const store = createStore(counter);
+
+
+// 4.) render function - central point to rerender Counter App
+const render = function() {
+	ReactDOM.render(
+		<Counter 
+			value={ store.getState() } 
+			onIncrement={ () => store.dispatch({type: 'INCREMENT'}) }
+			onDecrement={ () => store.dispatch({type: 'DECREMENT'}) }
+			/>,
+		document.getElementById('root')
+	); 
+}
+
+
+// 5.) render function is called everytime state gets changed 
 store.subscribe(render);
-// render initial state 0, rerender is in a callback 
+
+// initail render to display app 
 render();
 
-
-document.addEventListener('click', () =>
-	store.dispatch({ type: 'INCREMENT'})
-);
-
-
-// tests 
-
-expect(
-	counter(0, { type: 'INCREMENT'})
-).toEqual(1);
-
-expect(
-	counter(1, { type: 'INCREMENT'})
-).toEqual(2);
-
-expect(
-	counter(2, { type: 'DECREMENT'})
-).toEqual(1);
-
-expect(
-	counter(1, { type: 'DECREMENT'})
-).toEqual(0);
-
-expect (
-	counter(22, { type: 'Something'})
-).toEqual(22);
-
-expect(
-	counter(null, { type: 'INCREMENT'})
-).toEqual(1);
-
-
-console.log('Tests finished ');
