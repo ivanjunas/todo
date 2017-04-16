@@ -1,22 +1,41 @@
-
 import expect from 'expect';
+import { createStore } from 'redux';
 
 
-function counter(state, action) {
-	if (typeof state === undefined) {
-		return 0; // if state is undefined, return initial state 
+// simple reducer
+function counter(state = 0, action) {
+	switch(action.type) {
+		case 'INCREMENT':
+			return state + 1;
+		case 'DECREMENT':
+			return state -1;
+		default:
+			return state;
 	}
-
-	if (action.type === 'INCREMENT') {
-		return state + 1
-	} else if (action.type === 'DECREMENT') {
-		return state - 1;
-	} else {
-		return state;
-	}
-
 }
 
+const store = createStore(counter);
+
+// initial state is 0  
+console.log(store.getState());
+
+
+const render = () => {
+	document.body.innerText = store.getState();
+}
+
+
+store.subscribe(render);
+// render initial state 0, rerender is in a callback 
+render();
+
+
+document.addEventListener('click', () =>
+	store.dispatch({ type: 'INCREMENT'})
+);
+
+
+// tests 
 
 expect(
 	counter(0, { type: 'INCREMENT'})
