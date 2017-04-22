@@ -49,6 +49,21 @@ const visibilityFilter = (state = 'SHOW_ALL', action) => {
 	}
 };
 
+// implementaion of redux combine reducer
+// const combineReducers = (reducers) => {
+// 	return (state = {}, action) => {
+// 		return Object.keys(reducers).reduce(
+// 			(nextState, key) => {
+// 				// state object is a result of the reducer call 
+// 				nextState[key] = reducers[key](state[key], action);
+// 				return nextState;		
+// 			},
+// 			{}  // we start reduction on empty object
+// 		);
+// 	};
+// }
+
+
 // const todoApp = combineReducers({
 // 	todos: todos,
 // 	visibilityFilter: visibilityFilter
