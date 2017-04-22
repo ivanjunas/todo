@@ -4,6 +4,51 @@ import { createStore } from 'redux';
 import expect from 'expect';
 import deepFreeze from 'deep-freeze';
 
+// ------ TODOs ----------------------------
+
+const todos = (state = [], action) => {
+	switch (action.type) {
+		case 'ADD_TODO':
+			return [
+				...state,
+				{
+					id: action.id,
+					text: action.text,
+					completed: false
+				}
+			];
+		default:
+			return state;	
+	}	
+}
+
+const testAddTodo = function() {
+	const stateBefore = [];
+	const action = {
+		type: 'ADD_TODO',
+		id: 0,
+		text: 'Learn REDUX'
+	};
+	const stateAfter = [
+		{
+			id: 0,
+			text: 'Learn REDUX',
+			completed: false
+		}
+	];
+
+	deepFreeze(stateBefore);
+	deepFreeze(action);
+
+	expect(
+		todos(stateBefore, action)
+	).toEqual(stateAfter);
+
+};
+
+testAddTodo();
+
+// ------ Toggle TODO ---------------------
 
 const toggleTodo = (todo) => {
 	// 1. mutation of the object 
@@ -46,8 +91,10 @@ const testToggleTodo = function() {
 	).toEqual(todoAfter);
 };
 
-
 testToggleTodo();
+
+
+// ---- ADD, REMOVE, INCREMENT Counter --------------------------------
 
 
 const addCounter = (list) => {
@@ -118,7 +165,7 @@ testIncrementCounter();
 console.log('All tests passed!');
 
 
-//----------------------------------------------------------------------------
+//------ Counter------------------------------------------------------------
 
 // 1.) simple reducer
 function counter(state = 0, action) {
@@ -169,4 +216,3 @@ store.subscribe(render);
 
 // initail render to display app 
 render();
-
