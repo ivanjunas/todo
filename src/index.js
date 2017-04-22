@@ -1,7 +1,79 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { createStore } from 'redux';
+import expect from 'expect';
+import deepFreeze from 'deep-freeze';
 
+
+const addCounter = (list) => {
+	// list.push(0);
+	// return list; 
+	return [...list, 0];
+};
+
+const removeCounter = (list, idx) => {
+	// list.splice(idx, 1);
+	// return list;
+	return [
+		...list.slice(0, idx),
+		...list.slice(idx + 1)
+		];
+}
+
+const incrementCounter = (list, idx) => {
+	// reutrn list[idx]++;
+	// list.concat(list[idx] + 1); // variant instead of spread operator
+	return [
+		...list.slice(0, idx),
+		list[idx] + 1,
+		...list.slice(idx + 1)		
+	];
+} 
+
+// Tests - using deep freeze to avoid mutations 
+
+// test state is not mutated 
+const testAddCounter = function() {
+	const listBefore = [];
+	const listAfter = [0];
+
+	deepFreeze(listBefore);
+
+	expect(
+		addCounter(listBefore)
+	).toEqual(listAfter);
+}
+
+const testRemoveCounter = () => {
+	const listBefore = [0, 10, 20];
+	const listAfter = [0, 20];
+
+	deepFreeze(listBefore);
+
+	expect(
+		removeCounter(listBefore, 1)
+	).toEqual(listAfter);
+}
+
+const testIncrementCounter = () => {
+	const listBefore = [0, 10, 20];
+	const listAfter = [0, 11, 20];
+
+    deepFreeze(listBefore);
+    
+	expect(
+		incrementCounter(listBefore, 1)
+	).toEqual(listAfter);
+}
+
+testAddCounter();
+testRemoveCounter();
+testIncrementCounter();
+
+console.log('All tests passed!');
+
+
+//----------------------------------------------------------------------------
 
 // 1.) simple reducer
 function counter(state = 0, action) {
