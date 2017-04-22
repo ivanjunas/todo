@@ -5,6 +5,51 @@ import expect from 'expect';
 import deepFreeze from 'deep-freeze';
 
 
+const toggleTodo = (todo) => {
+	// 1. mutation of the object 
+	//todo.completed = !todo.completed;
+	//return todo;
+
+	// 2. create a new object  
+	// return {
+	// 	id: todo.id,
+	// 	text: todo.text,
+	// 	completed: !todo.completed
+	// };
+
+	// new in ES6
+	return Object.assign({}, todo, {completed: !todo.completed });
+
+	// ES7
+	// return {
+	// 	...todo,
+	// 	completed:, !todo.completed
+	// };
+}
+
+const testToggleTodo = function() {
+	const todoBefore = {
+		id: 0,
+		text: 'Learn Redux',
+		completed: false
+	};
+	const todoAfter = {
+		id: 0,
+		text: 'Learn Redux',
+		completed: true
+	};
+
+	deepFreeze(todoBefore);
+
+	expect(
+		toggleTodo(todoBefore)
+	).toEqual(todoAfter);
+};
+
+
+testToggleTodo();
+
+
 const addCounter = (list) => {
 	// list.push(0);
 	// return list; 
@@ -18,7 +63,7 @@ const removeCounter = (list, idx) => {
 		...list.slice(0, idx),
 		...list.slice(idx + 1)
 		];
-}
+};
 
 const incrementCounter = (list, idx) => {
 	// reutrn list[idx]++;
@@ -28,7 +73,7 @@ const incrementCounter = (list, idx) => {
 		list[idx] + 1,
 		...list.slice(idx + 1)		
 	];
-} 
+};
 
 // Tests - using deep freeze to avoid mutations 
 
