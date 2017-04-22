@@ -1,6 +1,7 @@
 // import React from 'react';
 // import ReactDOM from 'react-dom';
 import { createStore } from 'redux';
+import { combineReducers } from 'redux';
 
 
 // ------ TODOs reduduers -----------------------------------
@@ -48,17 +49,19 @@ const visibilityFilter = (state = 'SHOW_ALL', action) => {
 	}
 };
 
+// const todoApp = combineReducers({
+// 	todos: todos,
+// 	visibilityFilter: visibilityFilter
+// });
 
-// compositions of reducers
-const todoApp = (state = {}, action) => {
-	return {
-		todos: todos(state.todos, action),
-		visibilityFilter: visibilityFilter(state.visibilityFilter, action)
-	};
-}
+// es6 - shorthened syntax, reduers has same name as keys of the state 
+const todoApp = combineReducers({
+	todos,
+	visibilityFilter
+});
+
 
 const store = createStore(todoApp);
-
 
 console.log('Initial state:');
 console.log(store.getState());
