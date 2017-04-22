@@ -5,32 +5,43 @@ import expect from 'expect';
 import deepFreeze from 'deep-freeze';
 
 
-// ------ TODOs reduduer ----------------------------
+// ------ TODOs reduduers -----------------------------------
+
+const todo = (state, action) => {
+	switch (action.type) {
+		case 'ADD_TODO':
+			return {
+				id: action.id,
+				text: action.text,
+				completed: false
+			};
+		case 'TOGGLE_TODO':			
+			if (state.id !== action.id) {
+				return state;
+			}
+
+			return Object.assign({}, state, {completed: !todo.completed });
+		
+		default:
+			return state;	
+	}	
+}
 
 const todos = (state = [], action) => {
 	switch (action.type) {
 		case 'ADD_TODO':
 			return [
 				...state,
-				{
-					id: action.id,
-					text: action.text,
-					completed: false
-				}
+				todo(undefined, action)
 			];
 		case 'TOGGLE_TODO':
-			return state.map(todo => {
-				if (todo.id !== action.id) {
-					return todo;
-				}
-				// toggle todo for given id 
-				return Object.assign({}, todo, {completed: !todo.completed });
-			});
+			return state.map(item => todo(item, action));
 		default:
 			return state;	
 	}	
 }
 
+//-------- Tests --------------------------------------------
 
 const testAddTodo = function() {
 	const stateBefore = [];
