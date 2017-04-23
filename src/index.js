@@ -1,5 +1,5 @@
-// import React from 'react';
-// import ReactDOM from 'react-dom';
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import { createStore } from 'redux';
 import { combineReducers } from 'redux';
 
@@ -49,25 +49,6 @@ const visibilityFilter = (state = 'SHOW_ALL', action) => {
 	}
 };
 
-// implementaion of redux combine reducer
-// const combineReducers = (reducers) => {
-// 	return (state = {}, action) => {
-// 		return Object.keys(reducers).reduce(
-// 			(nextState, key) => {
-// 				// state object is a result of the reducer call 
-// 				nextState[key] = reducers[key](state[key], action);
-// 				return nextState;		
-// 			},
-// 			{}  // we start reduction on empty object
-// 		);
-// 	};
-// }
-
-
-// const todoApp = combineReducers({
-// 	todos: todos,
-// 	visibilityFilter: visibilityFilter
-// });
 
 // es6 - shorthened syntax, reduers has same name as keys of the state 
 const todoApp = combineReducers({
@@ -75,50 +56,54 @@ const todoApp = combineReducers({
 	visibilityFilter
 });
 
-
 const store = createStore(todoApp);
 
-console.log('Initial state:');
-console.log(store.getState());
-console.log('--------------');
 
-console.log('Dispatching ADD_TODO');
-store.dispatch({
-	type: 'ADD_TODO',
-	id: 0,
-	text: 'Learn Redux'
-});
-console.log('Current state:');
-console.log(store.getState());
-console.log('--------------');
+// ------------ React components ----------------------------------------
+let nextId = 0;
+
+class TodoApp  extends Component {
+
+	render() {
+		return ( 
+			<div>
+				<h1>Todo App</h1>
+
+				<input type="text" 
+				       ref={node => { 
+								this.input = node; 
+							}} />
+
+				<button onClick={() => {
+					store.dispatch({
+						type: 'ADD_TODO',
+						text: this.input.value,
+						id: nextId++
+					});
+					this.input.value = '';
+				}}>
+					Add Todo
+				</button>
+
+				<ul>
+					{this.props.todos.map((todo) => 
+						<li key={todo.id} >{todo.text}</li>
+					)}
+				</ul>
+			</div>
+		);
+	}
+}
 
 
-console.log('Dispatching ADD_TODO');
-store.dispatch({
-	type: 'ADD_TODO',
-	id: 1,
-	text: 'Go for dinner'
-});
-console.log('Current state:');
-console.log(store.getState());
-console.log('--------------');
+const render = () => {
+	ReactDOM.render(
+		<TodoApp todos={store.getState().todos} />, 
+		document.getElementById('root')
+	);
+}
 
-
-console.log('Dispatching TOGGLE_TODO');
-store.dispatch({
-	type: 'TOGGLE_TODO',
-	id: 0
-});
-console.log('Current state:');
-console.log(store.getState());
-console.log('--------------');
-
-
-console.log('Dispatching SET_VISIBILITY_FILTER');
-store.dispatch({
-	type: 'SET_VISIBILITY_FILTER',
-	filter: 'SHOW_COMPLETED'
-});
-console.log('Current state:');
-console.log(store.getState());
-console.log('--------------');
+// rerender everytime the state changes 
+store.subscribe(render);
+// init call 
+render();
