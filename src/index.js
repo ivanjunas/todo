@@ -63,6 +63,25 @@ const store = createStore(todoApp);
 // ------------ React components ----------------------------------------
 let nextId = 0;
 
+const Todo = ({text, completed, onClick}) => {
+	return (
+		<li onClick={onClick}
+		    style={{textDecoration: completed ? 'line-through' : 'none'}} >
+		    {text}
+		</li>
+	);
+} 
+
+const TodoList = ({todos, onTodoClick}) => (
+	<ul>
+		{todos.map(todo => 
+			<Todo key={todo.id} 
+			      text={todo.text} 
+				  completed={todo.completed}
+				  onClick={() => onTodoClick(todo.id)} />
+		)}
+	</ul>
+);
 
 const FilterLink = ({filter, currFilter, children}) => {
 	if (filter === currFilter) {
@@ -126,21 +145,14 @@ class TodoApp  extends Component {
 					Add Todo
 				</button>
 
-				<ul>
-					{visibleTodos.map((todo) => 
-						<li key={todo.id} 
-						    onClick={() => {
-						    	store.dispatch({
-						    		type: 'TOGGLE_TODO',
-						    		id: todo.id
-						    	});
-						    }}
-						    style={{textDecoration: todo.completed ? 'line-through' : 'none'}} >
-						    {todo.text}
-						</li>
-					)}
-				</ul>
-
+				<TodoList todos={visibleTodos}
+				          onTodoClick={(id) => {
+				          	store.dispatch({
+				          		type: 'TOGGLE_TODO',
+				          		id: id
+				          	});
+				          }} />
+				
 				<p>
 					Show:
 					{' '}
