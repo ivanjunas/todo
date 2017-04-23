@@ -19,7 +19,7 @@ const todo = (state, action) => {
 				return state;
 			}
 
-			return Object.assign({}, state, {completed: !todo.completed });
+			return Object.assign({}, state, {completed: !state.completed });
 		
 		default:
 			return state;	
@@ -27,6 +27,7 @@ const todo = (state, action) => {
 };
 
 const todos = (state = [], action) => {
+	console.log(action);
 	switch (action.type) {
 		case 'ADD_TODO':
 			return [
@@ -87,7 +88,16 @@ class TodoApp  extends Component {
 
 				<ul>
 					{this.props.todos.map((todo) => 
-						<li key={todo.id} >{todo.text}</li>
+						<li key={todo.id} 
+						    onClick={() => {
+						    	store.dispatch({
+						    		type: 'TOGGLE_TODO',
+						    		id: todo.id
+						    	});
+						    }}
+						    style={{textDecoration: todo.completed ? 'line-through' : 'none'}} >
+						    {todo.text}
+						</li>
 					)}
 				</ul>
 			</div>
