@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import { createStore } from 'redux';
 import { combineReducers } from 'redux';
@@ -61,16 +61,35 @@ const store = createStore(todoApp);
 
 
 // ------------ React components ----------------------------------------
+
 let nextId = 0;
 
-const Todo = ({text, completed, onClick}) => {
+const AddTodo = ({onAddClick}) => {
+	let input;
+
 	return (
-		<li onClick={onClick}
-		    style={{textDecoration: completed ? 'line-through' : 'none'}} >
-		    {text}
-		</li>
+		<div>
+			<input type="text" 
+			       ref={node => {input = node;}} />
+
+			<button onClick={() => {
+				onAddClick(input.value);
+				input.value = '';
+			}}>
+				Add Todo
+			</button>
+		</div>
 	);
-} 
+}
+
+
+const Todo = ({text, completed, onClick}) => (
+	<li onClick={onClick}
+	    style={{textDecoration: completed ? 'line-through' : 'none'}} >
+	    {text}
+	</li>
+);
+
 
 const TodoList = ({todos, onTodoClick}) => (
 	<ul>
@@ -83,7 +102,8 @@ const TodoList = ({todos, onTodoClick}) => (
 	</ul>
 );
 
-const FilterLink = ({filter, currFilter, children}) => {
+
+const FilterLink = ({filter, currFilter, children, onClick}) => {
 	if (filter === currFilter) {
 		return <span>{children}</span>;
 	}
@@ -92,16 +112,46 @@ const FilterLink = ({filter, currFilter, children}) => {
 		<a href="#" 
 		   onClick={e => {
 		 		e.preventDefault();
-		 		store.dispatch({
-		 			type: 'SET_VISIBILITY_FILTER',
-		 			filter: filter
-		 		});
+		 		onClick(filter);
 		   }}
 		 > 
 		 	{children}
 		 </a>
 	);
 };
+
+
+const Footer = ({visibilityFilter, onFilterClick}) => {
+	return (
+		<p>
+			Show:
+			{' '}
+			<FilterLink 
+				filter='SHOW_ALL' 
+				currFilter={visibilityFilter}
+				onClick={onFilterClick}
+			>
+				All
+			</FilterLink>
+			{', '}
+			<FilterLink 
+				filter='SHOW_ACTIVE' 
+				currFilter={visibilityFilter}
+				onClick={onFilterClick}
+			>
+				Active
+			</FilterLink>
+			{', '}
+			<FilterLink 
+				filter='SHOW_COMPLETED' 
+				currFilter={visibilityFilter}
+				onClick={onFilterClick}
+			>
+				Completed
+			</FilterLink>
+		</p>
+	);
+}
 
 const getVisibleTodos = (todos, filter) => {
 	switch(filter) {
@@ -117,55 +167,39 @@ const getVisibleTodos = (todos, filter) => {
 }
 
 
-class TodoApp  extends Component {
+const TodoApp = ({todos, visibilityFilter}) =>  (		
+	<div>
+		<h1>Todo App</h1>
 
-	render() {
-		// pull objects from props ES6 
-		const { todos, visibilityFilter } = this.props;
+		<AddTodo 
+			onAddClick={(inText) => {
+				store.dispatch({
+					type: 'ADD_TODO',
+					text: inText,
+					id: nextId++
+				});
+		}}/>
 
-		const visibleTodos = getVisibleTodos(todos, visibilityFilter);
-
-		return ( 
-			<div>
-				<h1>Todo App</h1>
-
-				<input type="text" 
-				       ref={node => { 
-								this.input = node; 
-							}} />
-
-				<button onClick={() => {
-					store.dispatch({
-						type: 'ADD_TODO',
-						text: this.input.value,
-						id: nextId++
-					});
-					this.input.value = '';
-				}}>
-					Add Todo
-				</button>
-
-				<TodoList todos={visibleTodos}
-				          onTodoClick={(id) => {
-				          	store.dispatch({
-				          		type: 'TOGGLE_TODO',
-				          		id: id
-				          	});
-				          }} />
-				
-				<p>
-					Show:
-					{' '}
-					<FilterLink filter='SHOW_ALL' currFilter={visibilityFilter}>All</FilterLink>
-					{' '}
-					<FilterLink filter='SHOW_ACTIVE' currFilter={visibilityFilter}>Active</FilterLink>
-					{' '}
-					<FilterLink filter='SHOW_COMPLETED' currFilter={visibilityFilter}>Completed</FilterLink>
-				</p>
-			</div>
-		);
-	}
-}
+		<TodoList 
+			todos={getVisibleTodos(todos, visibilityFilter)}
+		    onTodoClick={(id) => {
+	          	store.dispatch({
+	          		type: 'TOGGLE_TODO',
+	          		id: id
+	          	});
+	         }} />
+		
+		<Footer 
+			visibilityFilter={visibilityFilter} 
+			onFilterClick={filter => 
+		 		store.dispatch({
+		 			type: 'SET_VISIBILITY_FILTER',
+		 			filter
+		 		})		  
+			}
+		/>
+	</div>
+)
 
 
 const render = () => {
