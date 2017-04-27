@@ -78,7 +78,7 @@ const getVisibleTodos = (todos, filter) => {
 let nextId = 0;
 
 // 2ns param is context 
-const AddTodo = (props, { store }) => {
+let AddTodo = ({ dispatch }) => {
 	let input;
 
 	return (
@@ -90,7 +90,7 @@ const AddTodo = (props, { store }) => {
 			/>
 
 			<button onClick={() => {
-				store.dispatch({
+				dispatch({
 					type: 'ADD_TODO',
 					id: nextId++,
 					text: input.value
@@ -103,9 +103,18 @@ const AddTodo = (props, { store }) => {
 	);
 }
 
-AddTodo.contextTypes = {
-	store: PropTypes.object
-};
+AddTodo = connect(
+	// state => {
+	// 	return {};
+	// },
+	// when we don't need state its a waste to subscribe to it 
+	null,
+	// dispatch => {
+	// 	return { dispatch };
+	// }
+	// passing null is just patter to pass down only dispatch 
+	null
+)(AddTodo);
 
 
 const Todo = ({text, completed, onClick}) => (
@@ -114,26 +123,6 @@ const Todo = ({text, completed, onClick}) => (
 	    {text}
 	</li>
 );
-
-// map redux state to props of the component 
-const mapStateToProps = (state) => {
-	return {
-		todos: getVisibleTodos(state.todos, state.visibilityFilter)
-	};
-}
-
-// map method to the acctions that should be dispatched to store
-const mapDispatchToProps = (dispatch) => {
-	return {
-		onTodoClick: (id) => {
-			dispatch({
-				type: 'TOGGLE_TODO',						       
-				id: id
-			})
-		}
-	};
-}
-
 
 const TodoList = ({todos, onTodoClick}) => (
 	<ul>
@@ -147,7 +136,25 @@ const TodoList = ({todos, onTodoClick}) => (
 );
 
 
-const VisibleTodoList = connect(mapStateToProps, mapDispatchToProps)(TodoList);
+// map redux state to props of the component 
+const mapStateTodoToProps = (state) => {
+	return {
+		todos: getVisibleTodos(state.todos, state.visibilityFilter)
+	};
+}
+// map method to the acctions that should be dispatched to store
+const mapDispatchTodoToProps = (dispatch) => {
+	return {
+		onTodoClick: (id) => {
+			dispatch({
+				type: 'TOGGLE_TODO',						       
+				id: id
+			})
+		}
+	};
+}
+const VisibleTodoList = connect(mapStateTodoToProps, mapDispatchTodoToProps)(TodoList);
+
 
 
 const Link = ({active, children, onClick}) => {
