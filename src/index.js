@@ -73,9 +73,33 @@ const getVisibleTodos = (todos, filter) => {
 	}
 }
 
-// ------------ React components ----------------------------------------
+// ----------- actions creators ----------------------------------------
+
+const setVisibilityFilter = (filter) => {
+	return {
+		type: 'SET_VISIBILITY_FILTER',						       
+		filter
+	};
+}
 
 let nextId = 0;
+const addTodo = (text) => {
+	return {
+		type: 'ADD_TODO',
+		id: nextId++,						       
+		text
+	};
+}
+
+const toggleTodo = (id) => {
+	return {
+		type: 'TOGGLE_TODO',
+		id
+	};
+}
+
+// ------------ React components ----------------------------------------
+
 
 // 2ns param is context 
 let AddTodo = ({ dispatch }) => {
@@ -90,11 +114,7 @@ let AddTodo = ({ dispatch }) => {
 			/>
 
 			<button onClick={() => {
-				dispatch({
-					type: 'ADD_TODO',
-					id: nextId++,
-					text: input.value
-				})
+				dispatch(addTodo(input.value))
 				input.value = '';
 			}}>
 				Add Todo
@@ -146,10 +166,7 @@ const mapStateTodoToProps = (state) => {
 const mapDispatchTodoToProps = (dispatch) => {
 	return {
 		onTodoClick: (id) => {
-			dispatch({
-				type: 'TOGGLE_TODO',						       
-				id: id
-			})
+			dispatch(toggleTodo(id));
 		}
 	};
 }
@@ -184,10 +201,7 @@ const mapStateToLinkProps = (state, ownProps) => {
 const mapDispatchToLinkProps = (dispatch, ownProps) => {
 	return {
 		onClick: () => {
-			dispatch({
-				type: 'SET_VISIBILITY_FILTER',						       
-				filter: ownProps.filter
-			});
+			dispatch(setVisibilityFilter(ownProps.filter));
 		}
 	};
 }
