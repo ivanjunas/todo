@@ -75,28 +75,24 @@ const getVisibleTodos = (todos, filter) => {
 
 // ----------- actions creators ----------------------------------------
 
-const setVisibilityFilter = (filter) => {
-	return {
-		type: 'SET_VISIBILITY_FILTER',						       
-		filter
-	};
-}
+// conscise syntar ES6 return statement 
+const setVisibilityFilter = (filter) => ({
+	type: 'SET_VISIBILITY_FILTER',						       
+	filter
+});
 
 let nextId = 0;
-const addTodo = (text) => {
-	return {
-		type: 'ADD_TODO',
-		id: nextId++,						       
-		text
-	};
-}
+const addTodo = (text) => ({
+	type: 'ADD_TODO',
+	id: nextId++,						       
+	text
+});
 
-const toggleTodo = (id) => {
-	return {
-		type: 'TOGGLE_TODO',
-		id
-	};
-}
+
+const toggleTodo = (id) => ({
+	type: 'TOGGLE_TODO',
+	id
+});
 
 // ------------ React components ----------------------------------------
 
@@ -123,18 +119,7 @@ let AddTodo = ({ dispatch }) => {
 	);
 }
 // container component
-AddTodo = connect(
-	// state => {
-	// 	return {};
-	// },
-	// when we don't need state its a waste to subscribe to it 
-	null,
-	// dispatch => {
-	// 	return { dispatch };
-	// }
-	// passing null is just patter to pass down only dispatch 
-	null
-)(AddTodo);
+AddTodo = connect(null, null)(AddTodo);
 
 
 const Todo = ({text, completed, onClick}) => (
@@ -157,20 +142,19 @@ const TodoList = ({todos, onTodoClick}) => (
 
 
 // map redux state to props of the component 
-const mapStateTodoToProps = (state) => {
-	return {
-		todos: getVisibleTodos(state.todos, state.visibilityFilter)
-	};
-}
+const mapStateTodoToProps = (state) => ({
+	todos: getVisibleTodos(state.todos, state.visibilityFilter)
+});
+
 // map method to the acctions that should be dispatched to store
-const mapDispatchTodoToProps = (dispatch) => {
-	return {
-		onTodoClick: (id) => {
-			dispatch(toggleTodo(id));
-		}
-	};
-}
-const VisibleTodoList = connect(mapStateTodoToProps, mapDispatchTodoToProps)(TodoList);
+const mapDispatchTodoToProps = (dispatch) => ({
+	onTodoClick(id) {
+		dispatch(toggleTodo(id));
+	}
+});
+const VisibleTodoList = connect(
+	mapStateTodoToProps, 
+	mapDispatchTodoToProps)(TodoList);
 
 
 
@@ -192,19 +176,15 @@ const Link = ({active, children, onClick}) => {
 };
 
 
-const mapStateToLinkProps = (state, ownProps) => {
-	return {
-		active: state.visibilityFilter === ownProps.filter
-	};
-}
+const mapStateToLinkProps = (state, ownProps) => ({
+	active: state.visibilityFilter === ownProps.filter
+});
 
-const mapDispatchToLinkProps = (dispatch, ownProps) => {
-	return {
-		onClick: () => {
-			dispatch(setVisibilityFilter(ownProps.filter));
-		}
-	};
-}
+const mapDispatchToLinkProps = (dispatch, ownProps) => ({
+	onClick() {
+		dispatch(setVisibilityFilter(ownProps.filter));
+	}
+});
 const FilterLink = connect(
 	mapStateToLinkProps,
 	mapDispatchToLinkProps)(Link);
