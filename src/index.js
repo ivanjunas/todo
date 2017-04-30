@@ -4,19 +4,22 @@ import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import todoApp from './reducers';
 import App from './components/App';
+import { loadState, saveState} from './localStorage';
+import  throttle from 'lodash/throttle';
 
-// visibilityFilter will be undefined and show default argument will be used
-const persistedState = {
-	todos: [
-		{id:0, text: 'Welcome Back', completed: true},
-		{id:1, text: 'Learn React', completed: false},
-		{id:2, text: 'Learn Redux', completed: false}
-	],
-}
+const persistedState = loadState();
 
 const store = createStore(todoApp, persistedState);
 
-console.log(store.getState());
+// protect serialization just one time per second
+store.subscribe(throttle(
+	() => {
+		saveState({
+			todos: store.getState().todos
+		});
+	}, 
+	1000)
+);
 
 ReactDOM.render(
 	<Provider store={store}> 

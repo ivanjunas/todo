@@ -1,3 +1,5 @@
+import { v4 } from 'node-uuid';
+
 // ----------- actions creators ----------------------------------------
 
 // conscise syntar ES6 return statement 
@@ -6,10 +8,10 @@ export const setVisibilityFilter = (filter) => ({
 	filter
 });
 
-let nextId = 20;
+
 export const addTodo = (text) => ({
 	type: 'ADD_TODO',
-	id: nextId++,						       
+	id: v4(),						       
 	text
 });
 
