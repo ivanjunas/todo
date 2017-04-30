@@ -6,7 +6,7 @@ export const setVisibilityFilter = (filter) => ({
 	filter
 });
 
-let nextId = 0;
+let nextId = 20;
 export const addTodo = (text) => ({
 	type: 'ADD_TODO',
 	id: nextId++,						       
